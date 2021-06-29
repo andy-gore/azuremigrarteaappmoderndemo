@@ -24,3 +24,6 @@ az aks nodepool add \
     --node-count 1
 
 az aks update -n $AKS_CLUSTER -g $RESOURCE_GROUP --attach-acr $ACR
+
+az aks get-credentials -g $RESOURCE_GROUP -n $AKS_CLUSTER
+
