@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: aspnetdemo-svc
+spec:
+  ports:
+  - name: port80
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: aspnetdemo
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: aspnetdemo
+  name: aspnetdemo-sts
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aspnetdemo
+  serviceName: aspnetdemo-svc
+  template:
+    metadata:
+      labels:
+        app: aspnetdemo
+      name: aspnetdemo-sts
+    spec:
+      containers:
+      - image: bungle.azurecr.io/aspnetdemo:v1
+        imagePullPolicy: Always
+        name: aspnetdemo
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 2
+            memory: 800M
+          requests:
+            cpu: 1
+            memory: 300M
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts: []
+      imagePullSecrets:
+      - {}
+      nodeSelector:
+        beta.kubernetes.io/os: windows
+      volumes: []
+  volumeClaimTemplates: []
+
+---
